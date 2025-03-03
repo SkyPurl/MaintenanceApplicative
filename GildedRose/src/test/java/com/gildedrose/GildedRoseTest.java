@@ -1,12 +1,11 @@
 package com.gildedrose;
 
-
-import org.junit.jupiter.api.Test;
-
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.Test;
 
-class GildedRoseTest {
+public class GildedRoseTest {
 
     @Test
     public void testStandardItemBeforeSellDate() {
@@ -116,4 +115,12 @@ class GildedRoseTest {
         assertEquals(50, item.quality);
     }
 
+    @Test
+    public void testConjuredItemQualityNotNegative() {
+        Item conjured = new Item("Conjured Mana Cake", 5, 1);
+        GildedRose app = new GildedRose(new Item[]{conjured});
+        app.updateQuality();
+        assertEquals(0, conjured.quality);
+        assertEquals(4, conjured.sellIn);
+    }
 }

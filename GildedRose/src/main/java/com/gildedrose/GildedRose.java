@@ -17,8 +17,12 @@ public class GildedRose {
     }
     public void updateQuality() {
         for (Item item : items) {
-            Consumer<Item> updater = updateStrategies.getOrDefault(item.name, GildedRose::updateRegularItem);
-            updater.accept(item);
+            if (item.name.contains("Conjured")) {
+                updateConjuredItem(item);
+            } else {
+                Consumer<Item> updater = updateStrategies.getOrDefault(item.name, GildedRose::updateRegularItem);
+                updater.accept(item);
+            }
             if (!"Sulfuras, Hand of Ragnaros".equals(item.name)) {
                 decrementSellIn(item);
             }
@@ -28,6 +32,10 @@ public class GildedRose {
         }
     }
     private static void updateRegularItem(Item item) {
+        decrementQuality(item);
+    }
+    private static void updateConjuredItem(Item item) {
+        decrementQuality(item);
         decrementQuality(item);
     }
     private static void updateAgedBrie(Item item) {
@@ -53,7 +61,12 @@ public class GildedRose {
             case "Sulfuras, Hand of Ragnaros":
                 break;
             default:
-                decrementQuality(item);
+                if (item.name.contains("Conjured")) {
+                    decrementQuality(item);
+                    decrementQuality(item);
+                } else {
+                    decrementQuality(item);
+                }
                 break;
         }
     }
