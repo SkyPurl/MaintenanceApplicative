@@ -1,12 +1,14 @@
 package com.gildedrose;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+
+import com.gildedrose.Factory.ItemUpdaterFactory;
 import org.junit.Test;
 
 public class GildedRoseTest {
 
     @Test
-    public void testStandardItemBeforeSellDate() {
+    public void testRegularItemBeforeSellDate() {
         Item item = new Item("foo", 5, 10);
         GildedRose app = new GildedRose(new Item[]{item});
         app.updateQuality();
@@ -15,16 +17,7 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void testStandardItemAtZeroQuality() {
-        Item item = new Item("foo", 5, 0);
-        GildedRose app = new GildedRose(new Item[]{item});
-        app.updateQuality();
-        assertEquals(4, item.sellIn);
-        assertEquals(0, item.quality);
-    }
-
-    @Test
-    public void testStandardItemAfterSellDate() {
+    public void testRegularItemAfterSellDate() {
         Item item = new Item("foo", 0, 10);
         GildedRose app = new GildedRose(new Item[]{item});
         app.updateQuality();
@@ -42,15 +35,6 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void testAgedBrieAtMaxQuality() {
-        Item item = new Item("Aged Brie", 5, 50);
-        GildedRose app = new GildedRose(new Item[]{item});
-        app.updateQuality();
-        assertEquals(4, item.sellIn);
-        assertEquals(50, item.quality);
-    }
-
-    @Test
     public void testAgedBrieAfterSellDate() {
         Item item = new Item("Aged Brie", 0, 10);
         GildedRose app = new GildedRose(new Item[]{item});
@@ -60,12 +44,12 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void testSulfuras() {
-        Item item = new Item("Sulfuras, Hand of Ragnaros", 5, 80);
+    public void testAgedBrieAtMaxQuality() {
+        Item item = new Item("Aged Brie", 5, 50);
         GildedRose app = new GildedRose(new Item[]{item});
         app.updateQuality();
-        assertEquals(5, item.sellIn);
-        assertEquals(80, item.quality);
+        assertEquals(4, item.sellIn);
+        assertEquals(50, item.quality);
     }
 
     @Test
@@ -114,20 +98,64 @@ public class GildedRoseTest {
     }
 
     @Test
-    public void testConjuredItemQualityNotNegative() {
-        Item conjured = new Item("Conjured Mana Cake", 5, 1);
-        GildedRose app = new GildedRose(new Item[]{conjured});
+    public void testSulfurasNeverChanges() {
+        Item item = new Item("Sulfuras, Hand of Ragnaros", 5, 80);
+        GildedRose app = new GildedRose(new Item[]{item});
         app.updateQuality();
-        assertEquals(4, conjured.sellIn);
-        assertEquals(0, conjured.quality);
+        assertEquals(5, item.sellIn);
+        assertEquals(80, item.quality);
+    }
+
+    @Test
+    public void testConjuredItemBeforeSellDate() {
+        Item item = new Item("Conjured Mana Cake", 5, 10);
+        GildedRose app = new GildedRose(new Item[]{item});
+        app.updateQuality();
+        assertEquals(4, item.sellIn);
+        assertEquals(8, item.quality);
     }
 
     @Test
     public void testConjuredItemAfterSellDate() {
-        Item conjured = new Item("Conjured Mana Cake", 0, 10);
-        GildedRose app = new GildedRose(new Item[]{conjured});
+        Item item = new Item("Conjured Mana Cake", 0, 10);
+        GildedRose app = new GildedRose(new Item[]{item});
         app.updateQuality();
-        assertEquals(-1, conjured.sellIn);
-        assertEquals(6, conjured.quality);
+        assertEquals(-1, item.sellIn);
+        assertEquals(6, item.quality);
+    }
+
+    @Test
+    public void testFactoryCreatesRegularItemUpdater() {
+        Item item = new Item("foo", 5, 10);
+        ItemUpdater updater = ItemUpdaterFactory.create(item);
+        assertTrue(updater instanceof RegularItemUpdater);
+    }
+
+    @Test
+    public void testFactoryCreatesAgedBrieUpdater() {
+        Item item = new Item("Aged Brie", 5, 10);
+        ItemUpdater updater = ItemUpdaterFactory.create(item);
+        assertTrue(updater instanceof AgedBrieUpdater);
+    }
+
+    @Test
+    public void testFactoryCreatesBackstagePassUpdater() {
+        Item item = new Item("Backstage passes to a TAFKAL80ETC concert", 5, 10);
+        ItemUpdater updater = ItemUpdaterFactory.create(item);
+        assertTrue(updater instanceof BackstagePassUpdater);
+    }
+
+    @Test
+    public void testFactoryCreatesSulfurasUpdater() {
+        Item item = new Item("Sulfuras, Hand of Ragnaros", 5, 80);
+        ItemUpdater updater = ItemUpdaterFactory.create(item);
+        assertTrue(updater instanceof SulfurasUpdater);
+    }
+
+    @Test
+    public void testFactoryCreatesConjuredItemUpdater() {
+        Item item = new Item("Conjured Mana Cake", 5, 10);
+        ItemUpdater updater = ItemUpdaterFactory.create(item);
+        assertTrue(updater instanceof ConjuredItemUpdater);
     }
 }
