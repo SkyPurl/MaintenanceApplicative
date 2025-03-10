@@ -11,7 +11,6 @@ public class Game implements IGame {
    private static final int BOARD_SIZE = 12;
    private static final int WINNING_COINS = 6;
    private static final int QUESTIONS_PER_CATEGORY = 50;
-   private static final String[] CATEGORIES = {"Pop", "Science", "Sports", "Rock"};
 
    // État du jeu
    private final ArrayList<String> players = new ArrayList<>();
@@ -19,8 +18,8 @@ public class Game implements IGame {
    private final int[] purses = new int[MAX_PLAYERS];
    private final boolean[] inPenaltyBox = new boolean[MAX_PLAYERS];
 
-   // Questions par catégorie
-   private final Map<String, LinkedList<String>> questionMap;
+   // Questions par catégorie, indexées par l'enum Category
+   private final Map<Categories, LinkedList<String>> questionMap;
 
    // État du tour actuel
    private int currentPlayer = 0;
@@ -31,9 +30,9 @@ public class Game implements IGame {
       initializeQuestions();
    }
 
-   private Map<String, LinkedList<String>> initializeQuestionMap() {
-      Map<String, LinkedList<String>> map = new HashMap<>();
-      for (String category : CATEGORIES) {
+   private Map<Categories, LinkedList<String>> initializeQuestionMap() {
+      Map<Categories, LinkedList<String>> map = new HashMap<>();
+      for (Categories category : Categories.values()) {
          map.put(category, new LinkedList<>());
       }
       return map;
@@ -43,7 +42,7 @@ public class Game implements IGame {
       for (int i = 0; i < QUESTIONS_PER_CATEGORY; i++) {
          final int questionNumber = i;
          questionMap.forEach((category, questions) -> {
-            String questionText = category + " Question " + questionNumber;
+            String questionText = category.toString() + " Question " + questionNumber;
             questions.addLast(questionText);
          });
       }
@@ -113,7 +112,7 @@ public class Game implements IGame {
    }
 
    private void askQuestion() {
-      String category = currentCategory();
+      Categories category = currentCategory();
       LinkedList<String> questions = questionMap.get(category);
       if (questions.isEmpty()) {
          System.out.println("No more " + category + " questions!");
@@ -122,9 +121,9 @@ public class Game implements IGame {
       }
    }
 
-   private String currentCategory() {
+   private Categories currentCategory() {
       int position = places[currentPlayer] - 1;
-      return CATEGORIES[position % CATEGORIES.length];
+      return Categories.values()[position % Categories.values().length];
    }
 
    public boolean handleCorrectAnswer() {
