@@ -1,9 +1,10 @@
 package Calendar;
 
-import Calendar.Events.*;
+import Calendar.Events.Event;
 import Calendar.vo.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CalendarManager {
     private final List<Event> events;
@@ -18,11 +19,13 @@ public class CalendarManager {
 
     public List<Event> eventsDansPeriode(Periode periode) {
         return events.stream()
-                .filter(e -> e.appartientAPeriode(periode))
-                .toList();
+                // Pour chaque Event, récupérer son flux d’occurrences
+                .flatMap(e -> e.occurrences(periode))
+                // Collecter toutes les occurrences en une liste
+                .collect(Collectors.toList());
     }
 
     public void afficherEvenements() {
-        events.forEach(event -> System.out.println(event.description()));
+        events.forEach(e -> System.out.println(e.description()));
     }
 }
