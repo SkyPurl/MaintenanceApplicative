@@ -2,6 +2,8 @@
 package Calendar.Events;
 
 import Calendar.vo.*;
+
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 public class Reunion extends Event {
@@ -22,9 +24,11 @@ public class Reunion extends Event {
     }
 
     @Override
-    public Stream<Event> occurrences(Periode periode) {
-        return Stream.of((Event) this)
+    public Iterator<Event> occurrences(Periode periode) {
+        return Stream.<Event>of(this)
                 .filter(e -> !dateDebut.valeur().isBefore(periode.debut()))
-                .filter(e -> dateDebut.valeur().isBefore(periode.fin()));
+                .filter(e -> dateDebut.valeur().isBefore(periode.fin()))
+                .toList()
+                .iterator();
     }
 }

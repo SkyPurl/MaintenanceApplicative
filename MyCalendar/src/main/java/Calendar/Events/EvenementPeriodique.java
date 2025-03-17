@@ -2,6 +2,8 @@
 package Calendar.Events;
 
 import Calendar.vo.*;
+
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 public class EvenementPeriodique extends Event {
@@ -25,17 +27,21 @@ public class EvenementPeriodique extends Event {
     }
 
     @Override
-    public Stream<Event> occurrences(Periode periode) {
-        return Stream.iterate(dateDebut.valeur(),
+    public Iterator<Event> occurrences(Periode periode) {
+        return Stream.iterate(
+                        dateDebut.valeur(),
                         d -> d.isBefore(periode.fin()),
-                        d -> d.plusDays(frequenceJours))
+                        d -> d.plusDays(frequenceJours)
+                )
                 .filter(d -> !d.isBefore(periode.debut()))
-                .map(d -> new EvenementPeriodique(
+                .map(d -> (Event) new EvenementPeriodique(
                         titre,
                         new DateEvenement(d),
                         heureDebut,
                         duree,
                         frequenceJours
-                ));
+                ))
+                .toList()
+                .iterator();
     }
 }

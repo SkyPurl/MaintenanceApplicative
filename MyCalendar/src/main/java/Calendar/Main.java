@@ -55,7 +55,7 @@ public class Main {
     }
 
     private static Reunion creerReunion(Scanner scanner) {
-        scanner.nextLine(); // Consommer la ligne restante
+        scanner.nextLine();
         return new Reunion(
                 new TitreEvenement(scanner.nextLine()),
                 new DateEvenement(LocalDateTime.parse(scanner.nextLine())),

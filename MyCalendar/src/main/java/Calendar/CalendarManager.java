@@ -1,31 +1,42 @@
 package Calendar;
 
 import Calendar.Events.Event;
-import Calendar.vo.*;
-import java.util.ArrayList;
-import java.util.List;
+import Calendar.vo.Periode;
+import Calendar.Events.Evenements;
+
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+import java.util.Iterator;
+import java.util.List;
 
 public class CalendarManager {
-    private final List<Event> events;
+
+    private final Evenements evenements;
 
     public CalendarManager() {
-        this.events = new ArrayList<>();
+        this.evenements = new Evenements();
     }
 
     public void ajouterEvenement(Event evenement) {
-        events.add(evenement);
+        evenements.ajouter(evenement);
     }
 
     public List<Event> eventsDansPeriode(Periode periode) {
-        return events.stream()
-                // Pour chaque Event, récupérer son flux d’occurrences
-                .flatMap(e -> e.occurrences(periode))
-                // Collecter toutes les occurrences en une liste
-                .collect(Collectors.toList());
+        Iterator<Event> it = evenements.occurrences(periode);
+        return StreamSupport.stream(
+                Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED),
+                false
+        ).collect(Collectors.toList());
     }
 
     public void afficherEvenements() {
-        events.forEach(e -> System.out.println(e.description()));
+        // On affiche seulement les événements initiaux
+        // (pas chaque occurrence) ; adaptable selon tes besoins
+        Iterator<Event> it = evenements.iterator();
+        while (it.hasNext()) {
+            System.out.println(it.next().description());
+        }
     }
 }
