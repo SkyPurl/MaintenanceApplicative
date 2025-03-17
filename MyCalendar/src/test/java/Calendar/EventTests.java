@@ -255,4 +255,41 @@ class EventTests {
         );
         assertEquals(0, events.size());
     }
+
+    @Test
+    void testAjouterAnniversaire() {
+        Event anniv = new Anniversaire(
+                new TitreEvenement("Anniv. de Marie"),
+                new DateEvenement(LocalDateTime.of(2025, 4, 12, 14, 0)),
+                new HeureDebut(14, 0),
+                new DureeEvenement(180),
+                proprietaire,
+                "Marie"
+        );
+        calendar.ajouterEvenement(anniv);
+        List<Event> results = calendar.eventsDansPeriode(
+                new Periode(
+                        LocalDateTime.of(2025, 4, 12, 0, 0),
+                        LocalDateTime.of(2025, 4, 12, 23, 59)
+                )
+        );
+        assertEquals(1, results.size());
+        assertTrue(results.get(0) instanceof Anniversaire);
+    }
+
+    @Test
+    void testDescriptionAnniversaire() {
+        Event anniv = new Anniversaire(
+                new TitreEvenement("Anniv. de Paul"),
+                new DateEvenement(LocalDateTime.of(2025, 6, 1, 18, 0)),
+                new HeureDebut(18, 0),
+                new DureeEvenement(120),
+                proprietaire,
+                "Paul"
+        );
+        assertEquals(
+                "Anniversaire : Anniv. de Paul (propriétaire : Michel)  pour Paul",
+                anniv.description()
+        );
+    }
 }
