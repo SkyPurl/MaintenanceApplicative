@@ -52,16 +52,21 @@ Pour une meilleure expérience :
 ***
 Pour chaque membre du binôme:
 
-Faîtes chacun un très joli commit, nommé Trivia - Refactored! nom1 =, nom2
+Faîtes chacun un très joli commit, nommé Trivia - Refactored! nom1, nom2
 
 Oui, l'un de vous deux aura un commit avec tout le code... Est-ce que c'est grave ?  
 
-Si tu as répondu a cette uestion toi même, JE SUIS LE SEUL JUGE, OK ? :P
+Si tu as répondu a cette question toi même, JE SUIS LE SEUL JUGE, OK ? :P
 ***
 
 ## Suite - Votre binôme prend fin ici :/ Désolé
 
-Une fois que vous êtes fier de la forme que vous avez donnée au code, essayez ce qui suit :
+### Écrire des tests unitaires  
+Alternativement, essayez d'écrire plusieurs tests unitaires précis sur le comportement du jeu. Ce n'est pas plus facile à faire après avoir refactorisé le code, n'est-ce pas ? Refactoring = Compréhension approfondie.
+
+Indice : vous êtes autorisé à exposer les informations des joueurs hors du jeu.
+
+Une fois que vous êtes fier de la forme que vous avez donnée au code (et aux tests), essayez ce qui suit :
 
 ### Implémenter quelques changements  
 Essayez de mettre en œuvre certaines des demandes de changement suivantes :  
@@ -75,8 +80,3 @@ Essayez de mettre en œuvre certaines des demandes de changement suivantes :
 - [difficile] Une série (streak) est une séquence consécutive de réponses correctes pour un joueur donné. Après avoir donné 3 réponses correctes consécutives, un joueur gagne 2 points pour chaque réponse correcte suivante. Lorsqu'un joueur donne une réponse incorrecte : (a) s'il/elle était en série, la série se termine OU (b) s'il n'y avait pas de série, le joueur va en prison. (En d'autres termes, avec une série active, un joueur ne va pas en prison, mais perd sa série). De plus, la partie doit être remportée avec un double de points.
 
 Combien était-il difficile d'implémenter ces changements ?
-
-### Écrire des tests unitaires  
-Alternativement, essayez d'écrire plusieurs tests unitaires précis sur le comportement du jeu. Ce n'est pas plus facile à faire après avoir refactorisé le code, n'est-ce pas ? Refactoring = Compréhension approfondie.
-
-Indice : vous êtes autorisé à exposer les informations des joueurs hors du jeu.
