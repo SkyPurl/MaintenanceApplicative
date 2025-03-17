@@ -10,8 +10,8 @@ public class EvenementPeriodique extends Event {
     private final int frequenceJours;
 
     public EvenementPeriodique(TitreEvenement titre, DateEvenement dateDebut,
-                               HeureDebut heureDebut, DureeEvenement duree, int frequenceJours) {
-        super(titre, dateDebut, heureDebut, duree);
+                               HeureDebut heureDebut, DureeEvenement duree, int frequenceJours, ProprietaireEvenement proprietaire) {
+        super(titre, dateDebut, heureDebut, duree, proprietaire);
         this.frequenceJours = frequenceJours;
     }
 
@@ -21,9 +21,9 @@ public class EvenementPeriodique extends Event {
 
     @Override
     public String description() {
-        return "Événement périodique : "
-                + titre.valeur() + " tous les "
-                + frequenceJours + " jours";
+        return "Événement périodique : " + titre.valeur()
+                + " (propriétaire : " + proprietaire.valeur() + ") "
+                + " tous les " + frequenceJours + " jours";
     }
 
     @Override
@@ -39,7 +39,8 @@ public class EvenementPeriodique extends Event {
                         new DateEvenement(d),
                         heureDebut,
                         duree,
-                        frequenceJours
+                        frequenceJours,
+                        proprietaire
                 ))
                 .toList()
                 .iterator();

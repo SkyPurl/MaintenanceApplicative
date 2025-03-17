@@ -50,7 +50,8 @@ public class Main {
                 new TitreEvenement(scanner.nextLine()),
                 new DateEvenement(LocalDateTime.parse(scanner.nextLine())),
                 new HeureDebut(scanner.nextInt(), scanner.nextInt()),
-                new DureeEvenement(scanner.nextInt())
+                new DureeEvenement(scanner.nextInt()),
+                new ProprietaireEvenement(scanner.nextLine())
         );
     }
 
@@ -62,6 +63,7 @@ public class Main {
                 new HeureDebut(scanner.nextInt(), scanner.nextInt()),
                 new DureeEvenement(scanner.nextInt()),
                 new LieuEvenement(scanner.nextLine()),
+                new ProprietaireEvenement(scanner.nextLine()),
                 new Participants(scanner.nextLine().split(","))
         );
     }
@@ -72,7 +74,8 @@ public class Main {
                 new DateEvenement(LocalDateTime.parse(scanner.nextLine())),
                 new HeureDebut(scanner.nextInt(), scanner.nextInt()),
                 new DureeEvenement(scanner.nextInt()),
-                scanner.nextInt()
-        );
+                scanner.nextInt(),
+                new ProprietaireEvenement(scanner.nextLine()
+        ));
     }
 }

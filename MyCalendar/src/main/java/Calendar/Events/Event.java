@@ -8,12 +8,15 @@ public abstract class Event {
     protected final DateEvenement dateDebut;
     protected final HeureDebut heureDebut;
     protected final DureeEvenement duree;
+    protected final ProprietaireEvenement proprietaire;
 
-    protected Event(TitreEvenement titre, DateEvenement dateDebut, HeureDebut heureDebut, DureeEvenement duree) {
+
+    protected Event(TitreEvenement titre, DateEvenement dateDebut, HeureDebut heureDebut, DureeEvenement duree, ProprietaireEvenement proprietaire) {
         this.titre = titre;
         this.dateDebut = dateDebut;
         this.heureDebut = heureDebut;
         this.duree = duree;
+        this.proprietaire = proprietaire;
     }
 
     public TitreEvenement getTitre() {
@@ -30,6 +33,10 @@ public abstract class Event {
 
     public DureeEvenement getDuree() {
         return duree;
+    }
+
+    public ProprietaireEvenement getProprietaire() {
+        return proprietaire;
     }
 
     public abstract String description();

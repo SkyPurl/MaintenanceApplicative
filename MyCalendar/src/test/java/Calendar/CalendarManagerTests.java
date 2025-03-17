@@ -39,7 +39,8 @@ class CalendarManagerTests {
                 new TitreEvenement("Dentiste"),
                 new DateEvenement(d),
                 new HeureDebut(12, 0),
-                new DureeEvenement(30)
+                new DureeEvenement(30),
+                new ProprietaireEvenement("Alice")
         );
         manager.ajouterEvenement(rdv);
         List<Event> results = manager.eventsDansPeriode(
@@ -56,7 +57,8 @@ class CalendarManagerTests {
                 new TitreEvenement("RDV test"),
                 new DateEvenement(d),
                 new HeureDebut(10, 0),
-                new DureeEvenement(30)
+                new DureeEvenement(30),
+                new ProprietaireEvenement("Alice")
         );
         LocalDateTime d2 = LocalDateTime.of(2025, 1, 2, 9, 0);
         Event reunion = new Reunion(
@@ -65,6 +67,7 @@ class CalendarManagerTests {
                 new HeureDebut(9, 0),
                 new DureeEvenement(60),
                 new LieuEvenement("Salle 101"),
+                new ProprietaireEvenement("Bob"),
                 new Participants(new String[]{"Alice", "Bob"})
         );
         LocalDateTime d3 = LocalDateTime.of(2025, 1, 1, 10, 0);
@@ -73,7 +76,8 @@ class CalendarManagerTests {
                 new DateEvenement(d3),
                 new HeureDebut(10, 0),
                 new DureeEvenement(120),
-                1
+                1,
+                new ProprietaireEvenement("Alice")
         );
         manager.ajouterEvenement(rdv);
         manager.ajouterEvenement(reunion);
@@ -90,7 +94,8 @@ class CalendarManagerTests {
                 new TitreEvenement("TestConsole"),
                 new DateEvenement(LocalDateTime.of(2025, 1, 1, 10, 0)),
                 new HeureDebut(10, 0),
-                new DureeEvenement(60)
+                new DureeEvenement(60),
+                new ProprietaireEvenement("Alice")
         ));
         manager.afficherEvenements();
         String output = outContent.toString();
@@ -105,7 +110,8 @@ class CalendarManagerTests {
                 new DateEvenement(now.plusDays(3)),
                 new HeureDebut(9, 0),
                 new DureeEvenement(90),
-                7
+                7,
+                new ProprietaireEvenement("Alice")
         );
         manager.ajouterEvenement(periodique);
         List<Event> results = manager.eventsDansPeriode(new Periode(now, now.plusDays(2)));
@@ -120,7 +126,8 @@ class CalendarManagerTests {
                 new DateEvenement(start),
                 new HeureDebut(0, 0),
                 new DureeEvenement(30),
-                2
+                2,
+                new ProprietaireEvenement("Alice")
         );
         manager.ajouterEvenement(periodique);
         List<Event> results = manager.eventsDansPeriode(

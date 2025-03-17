@@ -11,16 +11,18 @@ public class Reunion extends Event {
     private final Participants participants;
 
     public Reunion(TitreEvenement titre, DateEvenement dateDebut, HeureDebut heureDebut,
-                   DureeEvenement duree, LieuEvenement lieu, Participants participants) {
-        super(titre, dateDebut, heureDebut, duree);
+                   DureeEvenement duree, LieuEvenement lieu, ProprietaireEvenement proprietaire, Participants participants) {
+        super(titre, dateDebut, heureDebut, duree, proprietaire);
         this.lieu = lieu;
         this.participants = participants;
     }
 
     @Override
     public String description() {
-        return "Réunion : " + titre.valeur() + " à "
-                + lieu.valeur() + " avec " + String.join(", ", participants.noms());
+        return "Réunion : " + titre.valeur()
+                + " (propriétaire : " + proprietaire.valeur() + ") "
+                + " à " + lieu.valeur()
+                + " avec " + String.join(", ", participants.noms());
     }
 
     @Override
