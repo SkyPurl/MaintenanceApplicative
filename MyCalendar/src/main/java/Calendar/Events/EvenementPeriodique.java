@@ -1,7 +1,6 @@
 package Calendar.Events;
 
 import Calendar.vo.*;
-import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 // Événement périodique
@@ -24,8 +23,7 @@ public class EvenementPeriodique extends Event {
 
     @Override
     public boolean appartientAPeriode(Periode periode) {
-        return Stream.iterate(dateDebut.valeur(), d -> d.plusDays(frequenceJours))
-                .takeWhile(d -> d.isBefore(periode.fin()))
+        return Stream.iterate(dateDebut.valeur(), d -> d.isBefore(periode.fin()), d -> d.plusDays(frequenceJours))
                 .anyMatch(d -> !d.isBefore(periode.debut()));
     }
 }
