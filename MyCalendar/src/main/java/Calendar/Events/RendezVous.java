@@ -11,4 +11,9 @@ public class RendezVous extends Event {
     public String description() {
         return "RDV : " + titre.valeur() + " le " + dateDebut.valeur() + " à " + heureDebut.heure() + "h" + heureDebut.minute();
     }
+
+    @Override
+    public boolean appartientAPeriode(Periode periode) {
+        return !dateDebut.valeur().isBefore(periode.debut()) && !dateDebut.valeur().isAfter(periode.fin());
+    }
 }

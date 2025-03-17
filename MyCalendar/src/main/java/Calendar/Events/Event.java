@@ -16,6 +16,7 @@ public abstract class Event {
     }
 
     public abstract String description();
+    public abstract boolean appartientAPeriode(Periode periode);
 
     public TitreEvenement getTitre() {
         return titre;

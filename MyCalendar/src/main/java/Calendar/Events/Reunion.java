@@ -16,5 +16,10 @@ public class Reunion extends Event {
     public String description() {
         return "Réunion : " + titre.valeur() + " à " + lieu.valeur() + " avec " + String.join(", ", participants.noms());
     }
+
+    @Override
+    public boolean appartientAPeriode(Periode periode) {
+        return !dateDebut.valeur().isBefore(periode.debut()) && !dateDebut.valeur().isAfter(periode.fin());
+    }
 }
 
