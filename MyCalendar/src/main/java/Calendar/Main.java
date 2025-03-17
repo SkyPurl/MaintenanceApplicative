@@ -23,7 +23,8 @@ public class Main {
                 },
                 "5", s -> {
                     throw new RuntimeException("Quitter");
-                }
+                },
+                "6", Main::creerAnniversaire
         );
 
         System.out.println("=== Gestionnaire d'Événements ===");
@@ -77,5 +78,36 @@ public class Main {
                 scanner.nextInt(),
                 new ProprietaireEvenement(scanner.nextLine()
         ));
+    }
+
+    private static Anniversaire creerAnniversaire(Scanner scanner) {
+        System.out.print("Titre : ");
+        TitreEvenement titre = new TitreEvenement(scanner.nextLine());
+
+        System.out.print("Date (YYYY-MM-DD HH:MM) : ");
+        LocalDateTime dt = LocalDateTime.parse(scanner.nextLine());
+
+        System.out.print("Heure debut (heure minute) : ");
+        int h = scanner.nextInt();
+        int m = scanner.nextInt();
+
+        System.out.print("Duree (minutes) : ");
+        int duree = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.print("Proprietaire : ");
+        String proprio = scanner.nextLine();
+
+        System.out.print("Personne fêtée : ");
+        String personneFetee = scanner.nextLine();
+
+        return new Anniversaire(
+                titre,
+                new DateEvenement(dt),
+                new HeureDebut(h,m),
+                new DureeEvenement(duree),
+                new ProprietaireEvenement(proprio),
+                personneFetee
+        );
     }
 }
