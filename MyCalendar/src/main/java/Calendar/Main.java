@@ -2,10 +2,9 @@ package Calendar;
 
 import Calendar.vo.*;
 import Calendar.Events.*;
-import java.time.LocalDateTime;
-import java.util.Map;
+import Calendar.User.*;
 import java.util.Scanner;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 public class Main {
@@ -13,101 +12,52 @@ public class Main {
         CalendarManager calendar = new CalendarManager();
         Scanner scanner = new Scanner(System.in);
 
-        Map<String, Function<Scanner, Event>> eventConstructors = Map.of(
-                "1", Main::creerRendezVous,
-                "2", Main::creerReunion,
-                "3", Main::creerEvenementPeriodique,
-                "4", s -> {
-                    calendar.afficherEvenements();
-                    return null;
-                },
-                "5", s -> {
-                    throw new RuntimeException("Quitter");
-                },
-                "6", Main::creerAnniversaire
-        );
+        // Initialisation des services
+        PasswordEncoder encoder = new BasicPasswordEncoder();
+        UserService userService = new UserService(encoder);
+        AuthenticationService authService = new AuthenticationService(userService, scanner);
+        EventRegistry eventRegistry = new EventRegistry();
 
-        System.out.println("=== Gestionnaire d'Événements ===");
-        Stream.generate(scanner::nextLine)
-                .map(eventConstructors::get)
-                .map(constructor -> {
-                    try {
-                        return constructor.apply(scanner);
-                    } catch (NullPointerException e) {
-                        System.out.println("Option invalide, veuillez réessayer.");
-                        return null;
-                    }
-                })
-                .forEach(event -> {
-                    try {
-                        calendar.ajouterEvenement(event);
-                    } catch (NullPointerException ignored) {
-                    }
-                });
-    }
+        // Authentification
+        User authenticatedUser = authService.authenticate();
 
-    private static RendezVous creerRendezVous(Scanner scanner) {
-        return new RendezVous(
-                new TitreEvenement(scanner.nextLine()),
-                new DateEvenement(LocalDateTime.parse(scanner.nextLine())),
-                new HeureDebut(scanner.nextInt(), scanner.nextInt()),
-                new DureeEvenement(scanner.nextInt()),
-                new ProprietaireEvenement(scanner.nextLine())
-        );
-    }
+        System.out.println("\nBienvenue " + authenticatedUser.username() + "!");
 
-    private static Reunion creerReunion(Scanner scanner) {
-        scanner.nextLine();
-        return new Reunion(
-                new TitreEvenement(scanner.nextLine()),
-                new DateEvenement(LocalDateTime.parse(scanner.nextLine())),
-                new HeureDebut(scanner.nextInt(), scanner.nextInt()),
-                new DureeEvenement(scanner.nextInt()),
-                new LieuEvenement(scanner.nextLine()),
-                new ProprietaireEvenement(scanner.nextLine()),
-                new Participants(scanner.nextLine().split(","))
-        );
-    }
+        try {
+            // Boucle principale
+            eventRegistry.displayEventMenu();
+            String displayKey = eventRegistry.getDisplayEventsKey();
+            String quitKey = eventRegistry.getQuitKey();
 
-    private static EvenementPeriodique creerEvenementPeriodique(Scanner scanner) {
-        return new EvenementPeriodique(
-                new TitreEvenement(scanner.nextLine()),
-                new DateEvenement(LocalDateTime.parse(scanner.nextLine())),
-                new HeureDebut(scanner.nextInt(), scanner.nextInt()),
-                new DureeEvenement(scanner.nextInt()),
-                scanner.nextInt(),
-                new ProprietaireEvenement(scanner.nextLine()
-        ));
-    }
+            Stream.generate(() -> {
+                        System.out.print("\nVotre choix: ");
+                        return scanner.nextLine();
+                    })
+                    .takeWhile(choice -> !choice.equals(quitKey))
+                    .forEach(choice -> {
+                        try {
+                            if (choice.equals(displayKey)) {
+                                calendar.afficherEvenements();
+                            } else {
+                                BiFunction<Scanner, User, Event> creator = eventRegistry.getCreator(choice);
+                                if (creator != null) {
+                                    Event event = creator.apply(scanner, authenticatedUser);
+                                    calendar.ajouterEvenement(event);
+                                    System.out.println("Événement ajouté avec succès!");
+                                    eventRegistry.displayEventMenu(); // Réaffiche le menu après chaque action
+                                } else {
+                                    System.out.println("Option invalide, veuillez réessayer.");
+                                }
+                            }
+                        } catch (Exception e) {
+                            System.out.println("Erreur: " + e.getMessage());
+                        }
+                    });
 
-    private static Anniversaire creerAnniversaire(Scanner scanner) {
-        System.out.print("Titre : ");
-        TitreEvenement titre = new TitreEvenement(scanner.nextLine());
+            System.out.println("Au revoir!");
 
-        System.out.print("Date (YYYY-MM-DD HH:MM) : ");
-        LocalDateTime dt = LocalDateTime.parse(scanner.nextLine());
-
-        System.out.print("Heure debut (heure minute) : ");
-        int h = scanner.nextInt();
-        int m = scanner.nextInt();
-
-        System.out.print("Duree (minutes) : ");
-        int duree = scanner.nextInt();
-        scanner.nextLine();
-
-        System.out.print("Proprietaire : ");
-        String proprio = scanner.nextLine();
-
-        System.out.print("Personne fêtée : ");
-        String personneFetee = scanner.nextLine();
-
-        return new Anniversaire(
-                titre,
-                new DateEvenement(dt),
-                new HeureDebut(h,m),
-                new DureeEvenement(duree),
-                new ProprietaireEvenement(proprio),
-                personneFetee
-        );
+        } catch (Exception e) {
+            System.out.println("Erreur inattendue: " + e.getMessage());
+        }
     }
 }
