@@ -17,6 +17,14 @@ public class Reunion extends Event {
         this.participants = participants;
     }
 
+    public LieuEvenement getLieu() {
+        return lieu;
+    }
+
+    public Participants getParticipants() {
+        return participants;
+    }
+
     @Override
     public String description() {
         return "Réunion : " + titre.valeur()
@@ -27,10 +35,6 @@ public class Reunion extends Event {
 
     @Override
     public Iterator<Event> occurrences(Periode periode) {
-        return Stream.<Event>of(this)
-                .filter(e -> !dateDebut.valeur().isBefore(periode.debut()))
-                .filter(e -> dateDebut.valeur().isBefore(periode.fin()))
-                .toList()
-                .iterator();
+        return singleOccurrenceIterator(periode);
     }
 }

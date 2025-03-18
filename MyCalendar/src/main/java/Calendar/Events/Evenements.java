@@ -1,6 +1,5 @@
 package Calendar.Events;
 
-import Calendar.Events.Event;
 import Calendar.vo.Periode;
 
 import java.util.ArrayList;

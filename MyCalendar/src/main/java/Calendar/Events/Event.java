@@ -2,6 +2,7 @@ package Calendar.Events;
 
 import Calendar.vo.*;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 public abstract class Event {
     protected final TitreEvenement titre;
@@ -37,6 +38,13 @@ public abstract class Event {
 
     public ProprietaireEvenement getProprietaire() {
         return proprietaire;
+    }
+
+    protected Iterator<Event> singleOccurrenceIterator(Periode periode) {
+        return Stream.<Event>of(this)
+                .filter(e -> !dateDebut.valeur().isBefore(periode.debut()))
+                .filter(e -> dateDebut.valeur().isBefore(periode.fin()))
+                .iterator();
     }
 
     public abstract String description();
