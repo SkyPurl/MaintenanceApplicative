@@ -1,82 +1,93 @@
-# Kata de Refactoring Trivia  
-(Juste l'un des nombreux katas de code sur [kata-log.rocks](https://kata-log.rocks/))
+# 🗓️ TP Noté – Maintenance Applicative & TDD en Java
+Gestionnaire d'Événements & Calendrier
 
-## Le problème  
-Voici un aperçu d'un jeu en action.  
-![Image du jeu Trivia](trivia.jpg)  
-À chaque tour, un joueur : lance le dé et doit répondre à une question du paquet correspondant à sa position actuelle. Si la réponse est correcte, il/elle gagne des pièces. Si elle est incorrecte, il/elle est envoyé(e) en prison. Le plateau comporte 12 positions.
 
-Vous devez découvrir les détails en consultant le code réel, comme dans la vie de tous les jours. Bonne chance !
+## 🎯 Objectifs du TP :
+Mettre en pratique la démarche Test-Driven Development (TDD).  
+Appliquer des principes propres à la maintenance applicative en faisant évoluer une base de code existante.
 
-## Que les tests commencent !  
-Il était une fois une implémentation (très) laide du Trivia Game.
+Pour pimenter un peu les choses, il y aura quelques petites contraintes:
+- Utiliser exclusivement des Value Objects  
+  // interdiction d'utiliser des primitives nues
+- Implémenter une solution reposant sur le polymorphisme  
+  // interdiction d'utiliser des conditionnels (if, switch, opérateur ternaire).
 
-Quelqu'un remarqua qu'à condition de fournir les mêmes entrées au système,  
-il affichera toujours la même sortie sur la console. Ce gars eut alors l'idée de  
-copier-coller l'ancienne implémentation (dans `Game.java`), et d'écrire un test  
-qui, en utilisant BEAUCOUP d'entrées aléatoires, appellerait à la fois l'ancien système et le NOUVEAU système avec les mêmes entrées.  
-De très, très nombreuses fois. Genre 10 000 fois. Puis, le test vérifierait simplement que la sortie console  
-restait identique malgré toute nos refactorisations.
 
-C'est ce qu'on appelle la "Golden Master Method", et c'est elle qui a servi à construire `GameTest`.
+## 📌 Contexte du TP :
+Votre supérieur, fan de *COBOL* et "autodicacte" a dévellopé un projet nommé **« *CalendarManager* »** (oui, une application avec un nom anglais, c'est plus classe), une application minimaliste de gestion d’événements et rendez-vous. Il n'a pas du tout confiance en l'utilisation de code externe (il a déjà fallu batailler pour passer aux fax...), donc il n'est même pas la peine de lui proposer une autre solution, même éprouvée.
 
-## La tâche  
-Votre mission est de refactoriser `Game.java`, en exécutant continuellement `GameTest` pour vous assurer que vous ne cassez rien.
+L’application souffre d’une mauvaise conception initiale (utilisation excessive de primitives, couplage fort, répétitions de conditionnels, etc.).
 
-⚠️ Essayez d'éviter le sur-engineering : Keep-it short and simple (Principe KISS 💋), même si à la base, c'était "Keep it simple, stupid", mais que ça ne parraissait pas politiquement correct.
+Votre rôle est d'appliquer une stratégie de refactoring progressif afin de transformer ce code fragile en un système robuste, facilement maintenable et évolutif.
 
-**Ne touchez pas à `GameOld.java`** sauf pour corriger un bug.
 
-Objectif : appliquer les principes de la programmation orientée objet, identifier les responsabilités (principe SRP), éliminer les duplications (principe DRY) et adopter d'autres bonnes pratiques logicielles !
+## 🚧 Contraintes techniques imposées :
 
-Avertissements :  
-- Certains noms sont trompeurs.  
-- Il manque des abstractions (classes).  
-- Une faute de frappe et un bug y sont cachés. Pouvez-vous les trouver ? Si oui, corrigez-les également dans l'ancien code (`GameOld.java`).
+### Baby-steps
+On ne casses pas tout d'un coup, on essaie de faire d'abord un nettoyage progressif pour réduire la quantité de code, puis on restructure.
 
-Faites de votre mieux jusqu'à ce que vous soyez *fier* de ce code !
+### Développement des nouvelles fonctionnalités guidé par les tests (TDD) :
+Chaque fonctionnalité doit être écrite en suivant strictement la démarche TDD :
+- Écrire d’abord un test qui échoue (rouge).
+- Implémenter le code nécessaire pour passer le test (vert).
+- Refactorer sans casser les tests précédents.
 
-## Temps de travail estimé : 2-4 heures  
-Pour une meilleure expérience :  
-- Travaillez idéalement en programmation en binôme  
-- Vous aurez besoin d'au moins 3-4 passages à travers le code  
-- Relisez chaque classe jusqu'à ce qu'il n'y ait **plus rien** à améliorer (oui, je peux passer poser des questions, alors te pose pas de question, si t'as un doute, c'est que tu peux mieux faire).
+### Interdiction des primitives nues :
+Toutes les données métier (dates, heures, durées, titres, lieux) doivent être représentées par des Value Objects immuables.
+Exemples obligatoires de Value Objects :
+- DateEvenement,
+- HeureDebut,
+- DureeEvenement,
+- TitreEvenement,
+- etc.
 
-## Technique  
-- Essayez d'utiliser autant de corrections rapides que possible : Alt-Enter/⌥Enter (IntelliJ) ou Ctrl-1 (Eclipse)  
-- Utilisez autant que possible le refactoring automatique de votre IDE  
-- Travaillez par petites étapes, en exécutant continuellement les tests  
-- Commitez fréquemment pour pouvoir revenir en arrière en cas d'erreur ou de mauvaise direction  
-- N'ayez jamais peur de revenir en arrière et d'explorer une autre idée de design
+Aucune primitive brute (int, double, String, Date, etc.) n’est autorisée dans le domaine métier directement.
 
-***
-Pour chaque membre du binôme:
+### Polymorphisme et interdiction des conditionnels :
+Aucun bloc conditionnel explicite (if, switch, opérateur ternaire) n'est autorisé dans le domaine métier.
+Tout comportement variant doit être géré par le polymorphisme via des interfaces ou classes abstraites.
 
-Faîtes chacun un très joli commit, nommé Trivia - Refactored! nom1 =, nom2
 
-Oui, l'un de vous deux aura un commit avec tout le code... Est-ce que c'est grave ?  
+## 📦 Domaine Métier (Calendrier d'événements) :
 
-Si tu as répondu a cette uestion toi même, JE SUIS LE SEUL JUGE, OK ? :P
-***
+Le calendrier permet d'ajouter différents types d'événements, notamment :
 
-## Suite - Votre binôme prend fin ici :/ Désolé
+- Rendez-vous personnels : simples, avec une date, une heure de début, une durée, un titre.
+- Réunions : avec des participants et un lieu.
+- Événements périodiques : répétitifs à fréquence fixe (hebdomadaire, mensuelle, annuelle).
+- Chaque événement peut générer une description textuelle spécifique à son type, sans utiliser de conditions explicites.
 
-Une fois que vous êtes fier de la forme que vous avez donnée au code, essayez ce qui suit :
 
-### Implémenter quelques changements  
-Essayez de mettre en œuvre certaines des demandes de changement suivantes :  
-- Le nombre maximum de joueurs doit être porté à 6  
-- Ajouter une nouvelle catégorie de questions « Géographie »  
-- Il doit y avoir au moins 2 joueurs pour démarrer la partie  
-- La partie ne doit pas commencer tant que tous les joueurs n'ont pas été ajoutés. En d'autres termes, de nouveaux joueurs ne peuvent pas rejoindre après le début du jeu.  
-- Aucun deux joueurs ne peuvent avoir le même nom.  
-- [difficile] Après une réponse incorrecte, un joueur ne va en prison que s'il échoue à répondre à une deuxième question dans la même catégorie. Autrement dit, il/elle se voit offrir une « seconde chance » dans la même catégorie.  
-- [difficile] Charger les questions à partir de 4 fichiers de propriétés : `rock.properties`, `sports.properties`, ...  
-- [difficile] Une série (streak) est une séquence consécutive de réponses correctes pour un joueur donné. Après avoir donné 3 réponses correctes consécutives, un joueur gagne 2 points pour chaque réponse correcte suivante. Lorsqu'un joueur donne une réponse incorrecte : (a) s'il/elle était en série, la série se termine OU (b) s'il n'y avait pas de série, le joueur va en prison. (En d'autres termes, avec une série active, un joueur ne va pas en prison, mais perd sa série). De plus, la partie doit être remportée avec un double de points.
+## ⚙️ Exigences fonctionnelles à implémenter :
+1) Ajouter un nouveau type d'événement au calendrier.
+2) Obtenir la liste des événements pour une période donnée.
+3) Détecter automatiquement les conflits entre événements (chevauchement horaire).
+4) Générer une description spécifique à chaque type d'événement.
+5) Pouvoir supprimer un événement par son identifiant métier (ajouter un EventId).
 
-Combien était-il difficile d'implémenter ces changements ?
 
-### Écrire des tests unitaires  
-Alternativement, essayez d'écrire plusieurs tests unitaires précis sur le comportement du jeu. Ce n'est pas plus facile à faire après avoir refactorisé le code, n'est-ce pas ? Refactoring = Compréhension approfondie.
+## ✅ Livrables attendus :
+Projet Maven ou Gradle comprenant obligatoirement des tests unitaires.  
+Commit par étape démontrant la démarche TDD (rouge → vert → refactor).  
+Respect strict des contraintes techniques :
+- Aucune primitive nue
+- Aucun conditionnel explicite
+- Utilisation obligatoire des Value Objects
+- Démonstration claire du polymorphisme
 
-Indice : vous êtes autorisé à exposer les informations des joueurs hors du jeu.
+
+## 🧑‍💻 Évaluation (à titre indicatif):
+- Qualité et fréquence des commits - **2 points**
+- Qualité de la démarche TDD - **4 points**
+- Implémentation des fonctionnalités - **2 points**
+- Respect des contraintes techniques - **4 points**
+- Qualité du design orienté objet & maintenabilité - **4 points**
+- Qualité/Lisibilité du code et des tests - **4 points**
+
+
+## 🚀 Suggestions d’évolution ultérieure possible (non obligatoire mais bonus) :
+- Sérialisation/Désérialisation vers JSON. **+1**
+- Ajout d'une interface utilisateur minimale. **+3**
+- Une idée, ben go, fait des beaux commits et je verrais bien ce que ça vaut. **+X**
+
+**Rappel: Un bonus est un bonus, le projet, hors bonus, est noté sur 20. Les bonus permettent juste de récuppérer des points potentiellement perdus.**
