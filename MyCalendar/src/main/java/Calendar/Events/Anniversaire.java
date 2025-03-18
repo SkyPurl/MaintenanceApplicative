@@ -29,10 +29,7 @@ public class Anniversaire extends Event {
 
     @Override
     public Iterator<Event> occurrences(Periode periode) {
-        return Stream.<Event>of(this)
-                .filter(e -> !dateDebut.valeur().isBefore(periode.debut()))
-                .filter(e -> dateDebut.valeur().isBefore(periode.fin()))
-                .iterator();
+        return singleOccurrenceIterator(periode);
     }
 
     public String getPersonneFetee() {
