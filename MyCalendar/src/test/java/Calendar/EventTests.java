@@ -1,6 +1,7 @@
 package Calendar;
 
 import Calendar.Events.*;
+import Calendar.Util.EventConflitDetector;
 import Calendar.vo.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,7 @@ class EventTests {
         );
         assertEquals(1, events.size());
         assertEquals(
-                "RDV : Réunion projet (propriétaire : Michel)  le 2025-03-17T10:00 à 10h0",
+                "RDV : Réunion projet (propriétaire : Michel) le 2025-03-17 à 10h00",
                 events.get(0).description()
         );
     }
@@ -141,17 +142,18 @@ class EventTests {
 
     @Test
     void testAjoutPlusieursTypesEvenements() {
+        // Les événements sont à des heures différentes pour éviter les conflits
         Event rdv = new RendezVous(
                 titre,
                 date,
-                heureDebut,
+                new HeureDebut(9, 0),  // 9h00
                 duree,
                 proprietaire
         );
         Event reunion = new Reunion(
                 titre,
                 date,
-                heureDebut,
+                new HeureDebut(11, 0),  // 11h00 (après la fin du RDV)
                 duree,
                 new LieuEvenement("Salle A"),
                 proprietaire,
@@ -160,7 +162,7 @@ class EventTests {
         Event periodique = new EvenementPeriodique(
                 titre,
                 date,
-                heureDebut,
+                new HeureDebut(13, 0),  // 13h00 (après la fin de la réunion)
                 duree,
                 7,
                 proprietaire
@@ -177,9 +179,6 @@ class EventTests {
         assertEquals(3, events.size());
     }
 
-    // ----------------------------------------------------------------
-    // Tests de validation (Value Objects, etc.)
-    // ----------------------------------------------------------------
 
     @Test
     void testTitreEvenementInvalide() {

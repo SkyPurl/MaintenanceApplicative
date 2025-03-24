@@ -1,15 +1,17 @@
 package Calendar.Events;
 
+import Calendar.vo.EventId;
 import Calendar.vo.Periode;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.StreamSupport;
 
-public class Evenements {
+public class Evenements implements Iterable<Event> {
 
     private final List<Event> interne;
 
@@ -19,6 +21,16 @@ public class Evenements {
 
     public void ajouter(Event e) {
         interne.add(e);
+    }
+
+    public boolean supprimer(EventId id) {
+        return interne.removeIf(e -> e.getId().equals(id));
+    }
+
+    public Optional<Event> trouverParId(EventId id) {
+        return interne.stream()
+                .filter(e -> e.getId().equals(id))
+                .findFirst();
     }
 
     public Iterator<Event> occurrences(Periode periode) {
@@ -34,7 +46,8 @@ public class Evenements {
         return occurrences.iterator();
     }
 
+    @Override
     public Iterator<Event> iterator() {
-        return interne.iterator();
+        return new ArrayList<>(interne).iterator(); // Copie défensive
     }
 }
