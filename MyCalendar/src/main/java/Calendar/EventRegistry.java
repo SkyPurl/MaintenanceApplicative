@@ -4,16 +4,17 @@ import Calendar.vo.*;
 import Calendar.Events.*;
 import Calendar.User.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 import java.util.function.BiFunction;
-import java.util.TreeMap;
 
 /**
  * Classe qui centralise l'enregistrement et la création des différents types d'événements
  */
 public class EventRegistry {
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
     private final Map<String, BiFunction<Scanner, User, Event>> eventCreators = new TreeMap<>();
     private final Map<String, String> eventDescriptions = new TreeMap<>();
     private int nextKey = 1;
@@ -43,6 +44,13 @@ public class EventRegistry {
     }
 
     /**
+     * Obtient les descriptions des événements
+     */
+    public Map<String, String> getEventDescriptions() {
+        return Collections.unmodifiableMap(eventDescriptions);
+    }
+
+    /**
      * Obtient la clé pour l'option "Afficher les événements"
      */
     public String getDisplayEventsKey() {
@@ -50,10 +58,31 @@ public class EventRegistry {
     }
 
     /**
+     * Obtient la clé pour l'option "Supprimer un événement"
+     */
+    public String getDeleteKey() {
+        return String.valueOf(nextKey + 1);
+    }
+
+    /**
+     * Obtient la clé pour l'option "Sauvegarder le calendrier"
+     */
+    public String getSaveKey() {
+        return String.valueOf(nextKey + 2);
+    }
+
+    /**
+     * Obtient la clé pour l'option "Charger le calendrier"
+     */
+    public String getLoadKey() {
+        return String.valueOf(nextKey + 3);
+    }
+
+    /**
      * Obtient la clé pour l'option "Quitter"
      */
     public String getQuitKey() {
-        return String.valueOf(nextKey + 1);
+        return String.valueOf(nextKey + 4);
     }
 
     /**
@@ -64,6 +93,9 @@ public class EventRegistry {
         eventDescriptions.forEach((key, description) ->
                 System.out.println(key + ": " + description));
         System.out.println(getDisplayEventsKey() + ": Afficher les événements");
+        System.out.println(getDeleteKey() + ": Supprimer un événement");
+        System.out.println(getSaveKey() + ": Sauvegarder le calendrier");
+        System.out.println(getLoadKey() + ": Charger le calendrier");
         System.out.println(getQuitKey() + ": Quitter");
     }
 
@@ -74,21 +106,29 @@ public class EventRegistry {
         System.out.print("Titre : ");
         TitreEvenement titre = new TitreEvenement(scanner.nextLine());
 
-        // On demande tout en une seule fois, ex: 2025-06-01 14:30
-        System.out.print("Date et heure (YYYY-MM-DD HH:MM) : ");
-        String dateTimeStr = scanner.nextLine(); // ex: "2025-06-01 14:30"
+        LocalDateTime ldt;
+        try {
+            // On demande tout en une seule fois, ex: 2025-06-01 14:30
+            System.out.print("Date et heure (YYYY-MM-DD HH:MM) : ");
+            String dateTimeStr = scanner.nextLine();
 
-        // On parse en LocalDateTime
-        LocalDateTime ldt = LocalDateTime.parse(dateTimeStr.replace(" ", "T"));
-        // Exemple: "2025-06-01 14:30" -> "2025-06-01T14:30"
+            // On parse en LocalDateTime
+            ldt = LocalDateTime.parse(dateTimeStr, DATE_TIME_FORMATTER);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Format de date invalide. Utilisez le format YYYY-MM-DD HH:MM");
+        }
 
         // On crée DateEvenement et HeureDebut en séparant les champs de ldt
         DateEvenement dateEvt = new DateEvenement(ldt);
         HeureDebut heureEvt = new HeureDebut(ldt.getHour(), ldt.getMinute());
 
-        System.out.print("Durée (minutes) : ");
-        int d = scanner.nextInt();
-        scanner.nextLine(); // Consommer fin de ligne
+        int d;
+        try {
+            System.out.print("Durée (minutes) : ");
+            d = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("La durée doit être un nombre entier");
+        }
 
         return new EventBasicInfo(
                 titre,
@@ -120,6 +160,7 @@ public class EventRegistry {
 
         System.out.print("Participants (séparés par des virgules): ");
         String participantsStr = scanner.nextLine();
+        String[] participantsArray = participantsStr.trim().split("\\s*,\\s*");
 
         return new Reunion(
                 info.titre(),
@@ -128,7 +169,7 @@ public class EventRegistry {
                 info.duree(),
                 new LieuEvenement(lieu),
                 new ProprietaireEvenement(user.username()),
-                new Participants(participantsStr.split(","))
+                new Participants(participantsArray)
         );
     }
 
@@ -136,8 +177,16 @@ public class EventRegistry {
         System.out.println("\n--- Création d'un événement périodique ---");
         EventBasicInfo info = collectBasicEventInfo(scanner);
 
-        System.out.print("Période (jours): ");
-        int periode = Integer.parseInt(scanner.nextLine());
+        int periode;
+        try {
+            System.out.print("Période (jours): ");
+            periode = Integer.parseInt(scanner.nextLine());
+            if (periode <= 0) {
+                throw new IllegalArgumentException("La période doit être positive");
+            }
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("La période doit être un nombre entier");
+        }
 
         return new EvenementPeriodique(
                 info.titre(),
@@ -166,9 +215,7 @@ public class EventRegistry {
         );
     }
 
-    /**
-     * Classe pour stocker les informations de base communes à tous les événements
-     */
+
     public record EventBasicInfo(
             TitreEvenement titre,
             DateEvenement date,

@@ -2,10 +2,12 @@
 package Calendar.Events;
 
 import Calendar.vo.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class EvenementPeriodique extends Event {
     private final int frequenceJours;
 
@@ -13,6 +15,11 @@ public class EvenementPeriodique extends Event {
                                HeureDebut heureDebut, DureeEvenement duree, int frequenceJours, ProprietaireEvenement proprietaire) {
         super(titre, dateDebut, heureDebut, duree, proprietaire);
         this.frequenceJours = frequenceJours;
+    }
+
+    protected EvenementPeriodique() {
+        super();
+        frequenceJours = 0;
     }
 
     public int getFrequenceJours() {

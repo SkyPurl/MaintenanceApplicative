@@ -50,4 +50,8 @@ public class Evenements implements Iterable<Event> {
     public Iterator<Event> iterator() {
         return new ArrayList<>(interne).iterator(); // Copie défensive
     }
+
+    public void clear() {
+        interne.clear();
+    }
 }

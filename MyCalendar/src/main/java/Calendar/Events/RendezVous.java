@@ -1,16 +1,22 @@
 package Calendar.Events;
 
 import Calendar.vo.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RendezVous extends Event {
 
     public RendezVous(TitreEvenement titre, DateEvenement dateDebut, HeureDebut heureDebut, DureeEvenement duree, ProprietaireEvenement proprietaire) {
         super(titre, dateDebut, heureDebut, duree, proprietaire);
+    }
+
+    protected RendezVous(){
+        super();
     }
 
     @Override

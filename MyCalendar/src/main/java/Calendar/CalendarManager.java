@@ -1,11 +1,13 @@
 package Calendar;
 
 import Calendar.Events.Event;
+import Calendar.Serialization.JsonCalendarSerializer;
 import Calendar.Util.EventConflitDetector;
 import Calendar.vo.EventId;
 import Calendar.vo.Periode;
 import Calendar.Events.Evenements;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -88,5 +90,32 @@ public class CalendarManager {
         public List<Event> getEvenementsEnConflit() {
             return Collections.unmodifiableList(evenementsEnConflit);
         }
+    }
+
+    public List<Event> getAllEvents() {
+        List<Event> result = new ArrayList<>();
+        evenements.iterator().forEachRemaining(result::add);
+        return result;
+    }
+
+
+    public void clearEvents() {
+        evenements.clear();
+    }
+
+    /**
+     * Sauvegarde le calendrier en JSON dans un fichier
+     */
+    public void saveToJson(String filePath) throws IOException {
+        JsonCalendarSerializer serializer = new JsonCalendarSerializer();
+        serializer.saveCalendarToFile(this, filePath);
+    }
+
+    /**
+     * Charge le calendrier depuis un fichier JSON
+     */
+    public void loadFromJson(String filePath) throws IOException {
+        JsonCalendarSerializer serializer = new JsonCalendarSerializer();
+        serializer.loadCalendarFromFile(this, filePath);
     }
 }

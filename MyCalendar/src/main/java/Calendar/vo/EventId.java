@@ -1,14 +1,23 @@
 package Calendar.vo;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import java.util.UUID;
 
 public record EventId(String valeur) {
 
-    public EventId {
+    @JsonCreator
+    public EventId(@JsonProperty("valeur") String valeur) {
         if (valeur == null || valeur.isBlank()) {
             throw new IllegalArgumentException("L'identifiant de l'événement ne peut pas être vide ou null");
         }
+        this.valeur = valeur;
+    }
+
+    // Constructeur par défaut pour la sérialisation JSON
+    private EventId() {
+        this(UUID.randomUUID().toString());
     }
 
     public static EventId generate() {

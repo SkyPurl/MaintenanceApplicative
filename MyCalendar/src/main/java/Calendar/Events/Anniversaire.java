@@ -1,12 +1,20 @@
 package Calendar.Events;
 
 import Calendar.vo.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.Iterator;
 import java.util.stream.Stream;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Anniversaire extends Event {
 
     private final String personneFetee;
+
+    protected Anniversaire() {
+        super();
+        personneFetee = "Anniversaire";
+    }
 
     public Anniversaire(
             TitreEvenement titre,
