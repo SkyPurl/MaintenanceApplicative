@@ -6,7 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -290,6 +293,232 @@ class EventTests {
         assertEquals(
                 "Anniversaire : Anniv. de Paul (propriétaire : Michel)  pour Paul",
                 anniv.description()
+        );
+    }
+
+    // ----------------------------------------------------------------
+    // Nouveaux tests pour EventId et détection de conflits
+    // ----------------------------------------------------------------
+
+    @Test
+    void testCreationEventId() {
+        // When
+        EventId id1 = EventId.generate();
+        EventId id2 = EventId.generate();
+
+        // Then
+        assertNotNull(id1);
+        assertNotNull(id2);
+        assertNotEquals(id1.valeur(), id2.valeur());
+    }
+
+    @Test
+    void testEventIdEquals() {
+        // Given
+        String idValue = "event-123";
+
+        // When
+        EventId id1 = new EventId(idValue);
+        EventId id2 = new EventId(idValue);
+        EventId id3 = new EventId("event-456");
+
+        // Then
+        assertEquals(id1, id2);
+        assertNotEquals(id1, id3);
+        assertEquals(id1.hashCode(), id2.hashCode());
+    }
+
+    @Test
+    void testInvalidEventId() {
+        // Then
+        assertThrows(IllegalArgumentException.class, () -> new EventId(null));
+        assertThrows(IllegalArgumentException.class, () -> new EventId(""));
+        assertThrows(IllegalArgumentException.class, () -> new EventId("   "));
+    }
+
+    @Test
+    void testDetectionConflit() {
+        // Given
+        RendezVous rdv1 = new RendezVous(
+                new TitreEvenement("RDV 1"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 24, 10, 0)),
+                new HeureDebut(10, 0),
+                new DureeEvenement(60),
+                proprietaire
+        );
+
+        RendezVous rdv2 = new RendezVous(
+                new TitreEvenement("RDV 2"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 24, 10, 30)),
+                new HeureDebut(10, 30),
+                new DureeEvenement(60),
+                proprietaire
+        );
+
+        // When
+        calendar.ajouterEvenement(rdv1);
+
+        // Then
+        EventConflitDetector detector = new EventConflitDetector();
+        assertTrue(detector.detectConflict(rdv1, rdv2));
+
+        // Test de l'ajout d'un événement en conflit
+        try {
+            calendar.ajouterEvenement(rdv2);
+            fail("Une exception de conflit aurait dû être levée");
+        } catch (Exception e) {
+            assertTrue(e instanceof CalendarManager.ConflitEvenementException);
+        }
+    }
+
+    @Test
+    void testPasDeConflit() {
+        // Given
+        RendezVous rdv1 = new RendezVous(
+                new TitreEvenement("RDV 1"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 24, 10, 0)),
+                new HeureDebut(10, 0),
+                new DureeEvenement(30),
+                proprietaire
+        );
+
+        RendezVous rdv2 = new RendezVous(
+                new TitreEvenement("RDV 2"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 24, 10, 30)),
+                new HeureDebut(10, 30),
+                new DureeEvenement(30),
+                proprietaire
+        );
+
+        // Then
+        EventConflitDetector detector = new EventConflitDetector();
+        assertFalse(detector.detectConflict(rdv1, rdv2));
+
+        // Test de l'ajout d'événements qui ne sont pas en conflit
+        calendar.ajouterEvenement(rdv1);
+        calendar.ajouterEvenement(rdv2);
+
+        // Vérifier que les deux ont été ajoutés
+        List<Event> events = calendar.eventsDansPeriode(
+                new Periode(
+                        LocalDateTime.of(2025, 3, 24, 0, 0),
+                        LocalDateTime.of(2025, 3, 24, 23, 59)
+                )
+        );
+        assertEquals(2, events.size());
+    }
+
+    @Test
+    void testSuppressionEvenementParId() {
+        // Given
+        RendezVous rdv = new RendezVous(
+                new TitreEvenement("RDV à supprimer"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 24, 10, 0)),
+                new HeureDebut(10, 0),
+                new DureeEvenement(60),
+                proprietaire
+        );
+        calendar.ajouterEvenement(rdv);
+        EventId idToDelete = rdv.getId();
+
+        // When
+        boolean deleted = calendar.supprimerEvenement(idToDelete);
+
+        // Then
+        assertTrue(deleted);
+        List<Event> events = calendar.eventsDansPeriode(
+                new Periode(
+                        LocalDateTime.of(2025, 3, 24, 0, 0),
+                        LocalDateTime.of(2025, 3, 24, 23, 59)
+                )
+        );
+        assertEquals(0, events.size());
+    }
+
+    @Test
+    void testSuppressionEvenementInexistant() {
+        // Given
+        EventId nonExistentId = EventId.generate();
+
+        // When
+        boolean deleted = calendar.supprimerEvenement(nonExistentId);
+
+        // Then
+        assertFalse(deleted);
+    }
+
+    @Test
+    void testTrouverEvenementParId() {
+        // Given
+        RendezVous rdv = new RendezVous(
+                new TitreEvenement("RDV à trouver"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 24, 10, 0)),
+                new HeureDebut(10, 0),
+                new DureeEvenement(60),
+                proprietaire
+        );
+        calendar.ajouterEvenement(rdv);
+        EventId idToFind = rdv.getId();
+
+        // When
+        Optional<Event> foundEvent = calendar.trouverParId(idToFind);
+
+        // Then
+        assertTrue(foundEvent.isPresent());
+        assertEquals("RDV à trouver", foundEvent.get().getTitre().valeur());
+    }
+
+    @Test
+    void testTrouverEvenementInexistant() {
+        // Given
+        EventId nonExistentId = EventId.generate();
+
+        // When
+        Optional<Event> foundEvent = calendar.trouverParId(nonExistentId);
+
+        // Then
+        assertFalse(foundEvent.isPresent());
+    }
+
+    // Classe de test pour l'itération d'événements dans Evenements
+    @Test
+    void testEvenementsIteration() {
+        // Given
+        Evenements evenements = new Evenements();
+
+        RendezVous rdv1 = new RendezVous(
+                new TitreEvenement("RDV Test"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 24, 10, 0)),
+                new HeureDebut(10, 0),
+                new DureeEvenement(60),
+                proprietaire
+        );
+
+        RendezVous rdv2 = new RendezVous(
+                new TitreEvenement("RDV Test 2"),
+                new DateEvenement(LocalDateTime.of(2025, 3, 25, 10, 0)),
+                new HeureDebut(10, 0),
+                new DureeEvenement(60),
+                proprietaire
+        );
+
+        // When
+        evenements.ajouter(rdv1);
+        evenements.ajouter(rdv2);
+
+        // Then - Check iterator
+        Iterator<Event> it = evenements.iterator();
+        assertTrue(it.hasNext());
+        Event first = it.next();
+        assertTrue(it.hasNext());
+        Event second = it.next();
+        assertFalse(it.hasNext());
+        assertThrows(NoSuchElementException.class, it::next);
+
+        // Verify events retrieved
+        assertTrue(
+                (first.getTitre().valeur().equals("RDV Test") && second.getTitre().valeur().equals("RDV Test 2")) ||
+                        (first.getTitre().valeur().equals("RDV Test 2") && second.getTitre().valeur().equals("RDV Test"))
         );
     }
 }
