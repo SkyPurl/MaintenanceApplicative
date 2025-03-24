@@ -1,6 +1,7 @@
 package Calendar;
 
 import Calendar.Events.*;
+import Calendar.Util.EventConflitDetector;
 import Calendar.vo.*;
 import org.junit.jupiter.api.Test;
 
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ConflitDetectionTest {
+public class ConflitDetectionTests {
 
     @Test
     void shouldDetectConflictingEvents() {
