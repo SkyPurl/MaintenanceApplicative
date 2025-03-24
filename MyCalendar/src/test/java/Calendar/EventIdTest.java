@@ -1,5 +1,6 @@
 package Calendar;
 
+import Calendar.vo.EventId;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
